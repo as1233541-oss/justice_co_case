@@ -30,3 +30,7 @@ class DataParsingException extends AppException {
 class UnknownException extends AppException {
   const UnknownException(super.message);
 }
+
+class CacheException extends AppException {
+  const CacheException([super.message = 'No saved data available yet.']);
+}

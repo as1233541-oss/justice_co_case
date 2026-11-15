@@ -1,4 +1,3 @@
-// Remote data source: asks the shared ApiClient for /todos and maps to models.
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/api_client.dart';
 import '../models/case_model.dart';

@@ -1,4 +1,4 @@
-import '../entities/case.dart';
+import '../entities/cases_result.dart';
 import '../repositories/case_repository.dart';
 
 class GetActiveCases {
@@ -6,5 +6,5 @@ class GetActiveCases {
 
   const GetActiveCases(this.repository);
 
-  Future<List<Case>> call() => repository.getActiveCases();
+  Future<CasesResult> call() => repository.getActiveCases();
 }

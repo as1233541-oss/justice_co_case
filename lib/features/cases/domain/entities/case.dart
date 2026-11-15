@@ -1,7 +1,7 @@
 class Case {
   final int id;
   final String title;
-  final String status;
+  final String status; // 'active' or 'closed'
 
   const Case({
     required this.id,

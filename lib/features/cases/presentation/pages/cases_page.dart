@@ -1,10 +1,12 @@
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/case.dart';
+import '../../domain/entities/cases_result.dart';
 import '../../domain/usecases/get_active_cases.dart';
 import '../widgets/case_list_item.dart';
 import '../widgets/error_view.dart';
+import '../widgets/offline_banner.dart';
 import '../widgets/summary_header.dart';
 
 class CasesPage extends StatefulWidget {
@@ -17,7 +19,7 @@ class CasesPage extends StatefulWidget {
 }
 
 class _CasesPageState extends State<CasesPage> {
-  late Future<List<Case>> _casesFuture;
+  late Future<CasesResult> _casesFuture;
 
   @override
   void initState() {
@@ -35,7 +37,7 @@ class _CasesPageState extends State<CasesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Active Cases')),
-      body: FutureBuilder<List<Case>>(
+      body: FutureBuilder<CasesResult>(
         future: _casesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -58,41 +60,60 @@ class _CasesPageState extends State<CasesPage> {
             return ErrorView(error: snapshot.error!, onRetry: _retry);
           }
 
-          final cases = snapshot.data ?? <Case>[];
-          if (cases.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.folder_open,
-                      size: 64, color: AppColors.textGrey),
-                  SizedBox(height: 12),
-                  Text(
-                    'No active cases found',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textGrey,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+          final result = snapshot.data!;
+          final cases = result.cases;
           return Column(
             children: [
-              SummaryHeader(count: cases.length),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  itemCount: cases.length,
-                  itemBuilder: (context, index) =>
-                      CaseListItem(caseItem: cases[index]),
+              if (result.fromCache)
+                OfflineBanner(
+                  lastSynced: result.lastSynced,
+                  onRetry: _retry,
                 ),
+              Expanded(
+                child: cases.isEmpty
+                    ? const _EmptyView()
+                    : Column(
+                        children: [
+                          SummaryHeader(count: cases.length),
+                          Expanded(
+                            child: ListView.builder(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              itemCount: cases.length,
+                              itemBuilder: (context, index) =>
+                                  CaseListItem(caseItem: cases[index]),
+                            ),
+                          ),
+                        ],
+                      ),
               ),
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _EmptyView extends StatelessWidget {
+  const _EmptyView();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.folder_open, size: 64, color: AppColors.textGrey),
+          SizedBox(height: 12),
+          Text(
+            'No active cases found',
+            style: TextStyle(
+              fontSize: 16,
+              color: AppColors.textGrey,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

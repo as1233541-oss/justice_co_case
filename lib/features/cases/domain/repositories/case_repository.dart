@@ -1,6 +1,6 @@
-import '../entities/case.dart';
+import '../entities/cases_result.dart';
 
 abstract class CaseRepository {
 
-  Future<List<Case>> getActiveCases();
+  Future<CasesResult> getActiveCases();
 }

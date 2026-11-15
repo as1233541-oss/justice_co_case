@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -15,6 +16,7 @@ class ApiClient {
     this.timeout = const Duration(seconds: 15),
   });
 
+ 
   Future<dynamic> getJson(String url) async {
     try {
       final response = await client.get(Uri.parse(url)).timeout(timeout);

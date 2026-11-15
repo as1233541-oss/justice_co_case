@@ -1,29 +1,52 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'core/network/api_client.dart';
 import 'core/network/network_info.dart';
 import 'core/theme/app_colors.dart';
+import 'features/cases/data/datasources/case_local_data_source.dart';
 import 'features/cases/data/datasources/case_remote_data_source.dart';
 import 'features/cases/data/repositories/case_repository_impl.dart';
 import 'features/cases/domain/usecases/get_active_cases.dart';
 import 'features/cases/presentation/pages/cases_page.dart';
 
-void main() {
+const String _cacheBoxName = 'cases_cache';
+
+Future<Box<String>> _openCacheBox() async {
+  try {
+    return await Hive.openBox<String>(_cacheBoxName);
+  } catch (_) {
+    await Hive.deleteBoxFromDisk(_cacheBoxName);
+    return Hive.openBox<String>(_cacheBoxName);
+  }
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  final cacheBox = await _openCacheBox();
+
   final apiClient = ApiClient(client: http.Client());
-  final dataSource = CaseRemoteDataSourceImpl(apiClient: apiClient);
+  final remoteDataSource = CaseRemoteDataSourceImpl(apiClient: apiClient);
+  final localDataSource = CaseLocalDataSourceImpl(cacheBox);
   final repository = CaseRepositoryImpl(
-    remoteDataSource: dataSource,
+    remoteDataSource: remoteDataSource,
+    localDataSource: localDataSource,
     networkInfo: NetworkInfoImpl(Connectivity()),
   );
   final getActiveCases = GetActiveCases(repository);
+
   runApp(JusticeCoApp(getActiveCases: getActiveCases));
 }
+
 class JusticeCoApp extends StatelessWidget {
   final GetActiveCases getActiveCases;
+
   const JusticeCoApp({super.key, required this.getActiveCases});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

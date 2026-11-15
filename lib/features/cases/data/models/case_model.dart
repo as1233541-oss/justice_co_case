@@ -7,6 +7,12 @@ class CaseModel extends Case {
     required super.status,
   });
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'completed': status == 'closed',
+      };
+
   factory CaseModel.fromJson(Map<String, dynamic> json) {
     return CaseModel(
       id: json['id'] as int,
