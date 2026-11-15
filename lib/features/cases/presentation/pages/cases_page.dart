@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/cases_result.dart';
@@ -40,6 +41,7 @@ class _CasesPageState extends State<CasesPage> {
       body: FutureBuilder<CasesResult>(
         future: _casesFuture,
         builder: (context, snapshot) {
+          // 1. LOADING
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: Column(
@@ -80,7 +82,13 @@ class _CasesPageState extends State<CasesPage> {
                               padding: const EdgeInsets.only(bottom: 16),
                               itemCount: cases.length,
                               itemBuilder: (context, index) =>
-                                  CaseListItem(caseItem: cases[index]),
+                                  CaseListItem(
+                                    caseItem: cases[index],
+                                    onTap: () => context.push(
+                                      '/cases/${cases[index].id}',
+                                      extra: cases[index],
+                                    ),
+                                  ),
                             ),
                           ),
                         ],

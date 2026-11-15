@@ -5,8 +5,9 @@ import '../../domain/entities/case.dart';
 
 class CaseListItem extends StatelessWidget {
   final Case caseItem;
+  final VoidCallback? onTap;
 
-  const CaseListItem({super.key, required this.caseItem});
+  const CaseListItem({super.key, required this.caseItem, this.onTap});
 
   String _capitalize(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
@@ -31,7 +32,11 @@ class CaseListItem extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),
-        child: IntrinsicHeight(
+        child: Material(
+          color: Colors.white,
+          child: InkWell(
+            onTap: onTap,
+            child: IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -79,7 +84,7 @@ class CaseListItem extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            _StatusPill(
+                            StatusPill(
                               label: _capitalize(caseItem.status),
                               color: accent,
                               background: isActive
@@ -96,17 +101,19 @@ class CaseListItem extends StatelessWidget {
             ],
           ),
         ),
+          ),
+        ),
       ),
     );
   }
 }
 
-class _StatusPill extends StatelessWidget {
+class StatusPill extends StatelessWidget {
   final String label;
   final Color color;
   final Color background;
 
-  const _StatusPill({
+  const StatusPill({
     required this.label,
     required this.color,
     required this.background,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/date_format.dart';
 
 class OfflineBanner extends StatelessWidget {
   final DateTime lastSynced;
@@ -11,17 +12,6 @@ class OfflineBanner extends StatelessWidget {
     required this.lastSynced,
     required this.onRetry,
   });
-
-  String _format(DateTime d) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    final hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
-    final minute = d.minute.toString().padLeft(2, '0');
-    final suffix = d.hour >= 12 ? 'PM' : 'AM';
-    return '${d.day} ${months[d.month - 1]}, $hour:$minute $suffix';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +25,7 @@ class OfflineBanner extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Offline: showing saved data from ${_format(lastSynced)}',
+              'Offline: showing saved data from ${formatDateTime(lastSynced)}',
               style: const TextStyle(
                 fontSize: 13,
                 color: AppColors.warning,

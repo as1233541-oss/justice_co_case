@@ -34,3 +34,7 @@ class UnknownException extends AppException {
 class CacheException extends AppException {
   const CacheException([super.message = 'No saved data available yet.']);
 }
+
+class ValidationException extends AppException {
+  const ValidationException(super.message);
+}
